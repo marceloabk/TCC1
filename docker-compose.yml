@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    web:
+        build: .
+        command: npm start
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules/
+    db:
+        image: rethinkdb
+        volumes:
+            - $PWD/data:/data
+        ports:
+            - 8080:8080
+            - 28015:28015
+            - 29015:29015
