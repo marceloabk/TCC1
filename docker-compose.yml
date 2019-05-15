@@ -7,10 +7,16 @@ services:
         volumes:
             - .:/usr/src/app
             - /usr/src/app/node_modules/
+    ira:
+        build: .
+        command: npm start
+        volumes:
+            - ./ira:/usr/src/app
+            - /usr/src/app/node_modules/
     db:
         image: rethinkdb
         volumes:
-            - $PWD/data:/data
+            - ./data:/data
         ports:
             - 8080:8080
             - 28015:28015
