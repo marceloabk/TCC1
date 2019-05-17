@@ -43,19 +43,25 @@ function filter_retweets() {
   r.db('TwitterDB').table('Tweets').filter(
     r.row.hasFields('retweeted_status').not()
     .and(
-      r.row('extended_tweet')('full_text').match("corrupção")
-      .or(r.row('extended_tweet')('full_text').match("corrupçao"))
-      .or(r.row('extended_tweet')('full_text').match("corrupcão"))
-      .or(r.row('extended_tweet')('full_text').match("corrupcao"))
-      .or(r.row('extended_tweet')('full_text').match("corrupto"))
-      .or(r.row('extended_tweet')('full_text').match("corrupta"))
-
-      .or(r.row('text').match("corrupção"))
-      .or(r.row('text').match("corrupçao"))
-      .or(r.row('text').match("corrupcão"))
-      .or(r.row('text').match("corrupcao"))
-      .or(r.row('text').match("corrupto"))
-      .or(r.row('text').match("corrupta"))
+      r.branch(
+        r.row.hasFields('extended_tweet'),
+        r.or(
+          r.row('extended_tweet')('full_text').match("(?i)corrupção"),
+          r.row('extended_tweet')('full_text').match("(?i)corrupçao"),
+          r.row('extended_tweet')('full_text').match("(?i)corrupcão"),
+          r.row('extended_tweet')('full_text').match("(?i)corrupcao"),
+          r.row('extended_tweet')('full_text').match("(?i)corrupto"),
+          r.row('extended_tweet')('full_text').match("(?i)corrupta")
+        ),
+        r.or(
+          r.row('text').match("(?i)corrupção"),
+          r.row('text').match("(?i)corrupçao"),
+          r.row('text').match("(?i)corrupcão"),
+          r.row('text').match("(?i)corrupcao"),
+          r.row('text').match("(?i)corrupto"),
+          r.row('text').match("(?i)corrupta")
+        )        
+      )
     )
   ).pluck({'extended_tweet' : ['full_text']}, 'text')
   .run(connection, function(err, result) {
@@ -67,8 +73,42 @@ function filter_retweets() {
   })
 }
 
+function delete_not_corruption(){
+  r.db('TwitterDB').table('Tweets').filter(
+    r.row.hasFields('retweeted_status')
+    .or(
+      r.branch(
+        r.row.hasFields('extended_tweet'),
+        r.and(
+          r.row('extended_tweet')('full_text').match("(?i)corrupção").not(),
+          r.row('extended_tweet')('full_text').match("(?i)corrupçao").not(),
+          r.row('extended_tweet')('full_text').match("(?i)corrupcão").not(),
+          r.row('extended_tweet')('full_text').match("(?i)corrupcao").not(),
+          r.row('extended_tweet')('full_text').match("(?i)corrupto").not(),
+          r.row('extended_tweet')('full_text').match("(?i)corrupta").not()
+        ),
+        r.and(
+          r.row('text').match("(?i)corrupção").not(),
+          r.row('text').match("(?i)corrupçao").not(),
+          r.row('text').match("(?i)corrupcão").not(),
+          r.row('text').match("(?i)corrupcao").not(),
+          r.row('text').match("(?i)corrupto").not(),
+          r.row('text').match("(?i)corrupta").not()
+        )        
+      )
+    )
+  ).delete()
+  .run(connection, function(err, result) {
+    if (err) {
+      console.log('[ERR Rethink] can\'t delete retweets')
+      console.log(err)
+      return
+    }
+    console.log(result)
+  })
+}
 
-conn_open(filter_retweets)
+conn_open(delete_not_corruption)
 
 //map(function(tweet){
 //  return 1
@@ -80,3 +120,4 @@ conn_open(filter_retweets)
 //r.db('TwitterDB').table('Tweets').group(
 //  r.epochTime(r.row('timestamp_ms').coerceTo('number').div(1000)).dayOfYear()
 //).count()
+
