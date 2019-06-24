@@ -1,0 +1,16 @@
+{
+  "name": "data",
+  "version": "1.0.0",
+  "description": "Node.js on Docker",
+  "author": "Marcelo Cristiano <marceloabk@hotmail.com>",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "csvtojson": "^2.0.8",
+    "stopword": "^0.2.4",
+    "objects-to-csv":"^1.2.1"    
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "data-collection",
+  "version": "1.0.0",
+  "description": "Node.js on Docker",
+  "author": "Marcelo Cristiano <marceloabk@hotmail.com>",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "mongodb": "^3.2.6",
+    "twitter": "^1.7.1",
+    "dotenv": "^8.0.0",
+    "objects-to-csv":"^1.2.1"
+  }
+}
